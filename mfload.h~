@@ -1,0 +1,6 @@
+#include <stdio.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <mstruct.h>
+
+MATRIX * load_matrix(int fd, void * buf, size_t qty);
