@@ -83,7 +83,8 @@ MATRIX multiply(MATRIX a, MATRIX b)
 			for (p = 0; p < a.col; ++p){
 				temp += a.point[i][p] * b.point[p][n];
 			}
-			result.point[i][n] = temp;
+	
+		result.point[i][n] = temp;
 		}
 	}
 	return result;
@@ -110,23 +111,19 @@ void clear(MATRIX *m)
 }
 
 
-MATRIX * unity(unsigned int row, unsigned int col)
+MATRIX * unity(unsigned int order)
 {
 	unsigned int i, n;
 	MATRIX * p = (MATRIX *)malloc(sizeof(MATRIX));
-	if (row > SIZE_LIMIT || col > SIZE_LIMIT){
+	if (order > SIZE_LIMIT){
 		printf("Size out of range, when constructing unity matrix!");
 		exit(1);
 	}
-	else if (row != col){
-		printf("Not a squared matrix!");
-		exit(1);
-	}
-	p->row = row;
-	p->col = col;
-	p->size = row * col;
+	p->row = order;
+	p->col = order;
+	p->size = order * order;
 	clear(p);
-	for (i = 0; i < row; ++i){
+	for (i = 0; i < order; ++i){
 		p->point[i][i] = 1;
 	}
 	return p;
@@ -150,4 +147,70 @@ void cat(MATRIX * a, MATRIX * b)
 	}
 	a->col += b->col;
 	a->size = a->row * a->col;
+}
+
+void copy(MATRIX * src, MATRIX * tgt)
+{
+	unsigned int i, n;
+	src->row = tgt->row;
+	src->col = tgt->col;
+	src->size =tgt->size;
+	for (i = 0; i < src->row; ++i){
+		for (n = 0; n < src->col; ++n){
+			src->point[i][n] = tgt->point[i][n];
+		}
+	}
+}
+
+MATRIX inverse(MATRIX a)
+{
+	unsigned i, n, k, l;
+	float c, aik, kk;
+	float kn[a.row];
+	MATRIX result;
+	MATRIX * u, * temp;
+	temp = (MATRIX *)malloc(sizeof(MATRIX));
+	if (a.row != a.col){
+		printf("Not a squared matrix, no inverse!");
+		exit(1);
+	}
+	u = unity(a.row);
+	copy(&result, &a);
+	cat(&result, u);
+	copy(temp, &result);
+	free(u);
+	for (k = 0; k < result.row; ++k){
+		for (i = 0; i < result.row; ++i){
+			for (n = 0; n < result.col; ++n){
+				if (i == k){
+					result.point[i][n] = temp->point[i][n] / temp->point[k][k];
+				}
+				else{
+					/* result.point[k][k] != 0 */
+					c = temp->point[i][k] / temp->point[k][k];
+					result.point[i][n] = temp->point[i][n] - c * temp->point[k][n];
+				}
+			}
+		}
+		copy(temp, &result);
+	}
+	free(temp);
+	subcat(&result, a.col + 1, result.col);
+	return result;
+}
+
+void subcat(MATRIX * m, unsigned int start, unsigned int end)
+{
+	if (start > m->col || end > m->col || start > end ){
+		printf("Range error when subcating matrix!");
+		exit(1);
+	}
+	unsigned int i, n;
+	for (i = 0; i < m->row; ++i){
+		for (n = start - 1; n < end; ++n){
+			m->point[i][n - start + 1] = m->point[i][n];
+		}
+	}
+	m->col = end - start + 1;
+	m->size = m->row * m->col;
 }

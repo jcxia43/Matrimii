@@ -8,11 +8,15 @@ int main(int argc, char *argv[])
 {
 	if (argc > 1){
 		FILE * fp = fopen(argv[1],"r+");
-		MATRIX * p = unity(3,3);
-		MATRIX q;
-		q = load_matrix(fp);
-		cat(p, &q);
-		print_matrix(*p);
+		MATRIX p, q, m;
+		p = load_matrix(fp);
+		q = inverse(p);
+		m = multiply(p, q);
+		print_matrix(p);
+		print_matrix(q);
+		print_matrix(m);
+		char c;
+		c = getchar();
 	}
 	return 0;
 }
