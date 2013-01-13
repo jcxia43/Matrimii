@@ -7,3 +7,7 @@ void print_matrix(MATRIX m);
 MATRIX get_transpose(MATRIX m);
 MATRIX add(MATRIX a, MATRIX b, int coa, int cob);
 MATRIX multiply(MATRIX a, MATRIX b);
+void multiply_co(MATRIX * m, float a);
+MATRIX * unity(unsigned int row, unsigned int col);
+void clear(MATRIX * m);
+void cat(MATRIX * a, MATRIX *b);
