@@ -11,6 +11,5 @@ void multiply_co(MATRIX * m, float a);
 MATRIX * unity(unsigned int order);
 void clear(MATRIX * m);
 void cat(MATRIX * a, MATRIX *b);
-void subcat(MATRIX * m, unsigned int start, unsigned int end);
 MATRIX inverse(MATRIX a);
 void copy(MATRIX * src, MATRIX * tgt);

@@ -168,49 +168,36 @@ MATRIX inverse(MATRIX a)
 	float c, aik, kk;
 	float kn[a.row];
 	MATRIX result;
-	MATRIX * u, * temp;
+	MATRIX * temp;
 	temp = (MATRIX *)malloc(sizeof(MATRIX));
 	if (a.row != a.col){
 		printf("Not a squared matrix, no inverse!");
 		exit(1);
 	}
-	u = unity(a.row);
 	copy(&result, &a);
-	cat(&result, u);
 	copy(temp, &result);
-	free(u);
 	for (k = 0; k < result.row; ++k){
 		for (i = 0; i < result.row; ++i){
 			for (n = 0; n < result.col; ++n){
-				if (i == k){
-					result.point[i][n] = temp->point[i][n] / temp->point[k][k];
+				if (i == k && n != k){
+					result.point[k][n] = temp->point[k][n] / temp->point[k][k];
+				}
+				else if(i == k && n == k){
+					/* result.point[k][k] != 0 */
+					result.point[k][k] = 1 / temp->point[k][k];
+				}
+				else if (n == k){
+					result.point[i][k] = 0 - temp->point[i][k] / temp->point[k][k];
 				}
 				else{
-					/* result.point[k][k] != 0 */
-					c = temp->point[i][k] / temp->point[k][k];
-					result.point[i][n] = temp->point[i][n] - c * temp->point[k][n];
+					c = temp->point[i][k] * temp->point[k][n] / temp->point[k][k];
+					result.point[i][n] = temp->point[i][n] - c;
 				}
 			}
 		}
 		copy(temp, &result);
 	}
 	free(temp);
-	subcat(&result, a.col + 1, result.col);
 	return result;
 }
 
-void subcat(MATRIX * m, unsigned int start, unsigned int end)
-{
-	if (start > m->col || end > m->col || start > end ){
-		printf("Range error when subcating matrix!");
-		exit(1);
-	}
-	unsigned int i, n;
-	for (i = 0; i < m->row; ++i){
-		for (n = start - 1; n < end; ++n){
-			m->point[i][n - start + 1] = m->point[i][n];
-		}
-	}
-	m->col = end - start + 1;
-	m->size = m->row * m->col;
-}
